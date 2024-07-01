@@ -118,4 +118,50 @@ app.post('/api/updateRetailProduct', upload.single('imgfile'), function (req, re
         });
 });
 
+app.post('/api/addToFav/:sku', jsonParser, function (req, res) {
+    var memberId = req.body.memberId;
+    var sku = req.params.sku; // Get sku from URL parameter
+
+    var data = {
+        memberId: memberId,
+        sku: sku
+    };
+
+    favourite.addFavourite(data)
+        .then((result) => {
+            res.send({ success: true, message: "Item added to favourites successfully" });
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send("Failed to add to favourites");
+        });
+});
+
+// Remove from Favorites
+app.delete('/api/removeFromFav/:sku', jsonParser, function (req, res) {
+    var memberId = req.body.memberId;
+    var sku = req.params.sku; // Get sku from URL parameter
+
+    favourite.removeFavourite(memberId, sku)
+        .then((result) => {
+            res.send({ success: true, message: "Item removed from favourites successfully" });
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send("Failed to remove from favourites");
+        });
+});
+
+app.get('/api/getFavourites/:memberId', function (req, res) {
+    var memberId = req.params.memberId; // Get memberId from URL parameter
+
+    favourite.getFavourites(memberId)
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send("Failed to retrieve favourites");
+        });
+});
 module.exports = app;

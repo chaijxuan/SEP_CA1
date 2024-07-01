@@ -28,11 +28,14 @@
         var countryPrefix = localStorage.getItem('urlPrefix');
         var currentUrl = new URL(window.location.href);
         var sku = currentUrl.searchParams.get("sku");
-        var memberId = sessionStorage.getItem('memberId'); // Use memberId instead of email
+        var memberId = sessionStorage.getItem('memberId'); 
+
         if (sku == null || sku == '') {
             window.location.href = '/B/' + countryPrefix + '/index.html';
         }
+
         var countryId = localStorage.getItem('countryId');
+
         fetch(new Request('/api/getFurnitureBySku?sku=' + sku + '&countryId=' + countryId, {
             method: 'GET'
         })).then(function (response) {
@@ -55,8 +58,7 @@
                 var store = storesInCountry[i];
                 if (store.id == storeID) {
                     selectOptions += '<option selected value="' + store.id + '">' + store.name + '</option>';
-                }
-                else {
+                } else {
                     selectOptions += '<option value="' + store.id + '">' + store.name + '</option>';
                 }
             }
@@ -73,20 +75,30 @@
                     </div>';
             }
 
-            // Initialize heart icon based on local storage
-            var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-            if (favorites.includes(sku)) {
-                document.querySelector('.heart-icon').classList.add('clicked');
-            }
+            // Initialize heart icon based on server-side favourites
+            if (memberId != null && memberId != '') {
+                fetch('/api/getFavourites/' + memberId)
+                    .then(response => response.json())
+                    .then(favourites => {
+                        if (favourites.some(fav => fav.sku === sku)) {
+                            document.querySelector('.heart-icon').classList.add('clicked');
+                        }
+                    })
+                    .catch(error => console.error('Error fetching favourites:', error));
 
-            document.querySelector('.heart-icon').addEventListener('click', function () {
-                this.classList.toggle('clicked');
-                if (this.classList.contains('clicked')) {
-                    addToFavorites(sku);
-                } else {
-                    removeFromFavorites(sku);
-                }
-            });
+                document.querySelector('.heart-icon').style.display = 'block'; // Show heart icon if user is logged in
+
+                document.querySelector('.heart-icon').addEventListener('click', function () {
+                    this.classList.toggle('clicked');
+                    if (this.classList.contains('clicked')) {
+                        addToFavorites(sku);
+                    } else {
+                        removeFromFavorites(sku);
+                    }
+                });
+            } else {
+                document.querySelector('.heart-icon').style.display = 'none'; // Hide heart icon if user is not logged in
+            }
 
         }).catch(function (error) {
             console.log(error);
@@ -102,8 +114,7 @@
                 if (quantity == null || quantity == '') {
                     var url = window.location.origin + window.location.pathname;
                     window.location.href = url + '?sku=' + sku + '&errMsg=Item not added to cart, not enough quantity available.';
-                }
-                else {
+                } else {
                     var allOk = true;
                     var shoppingCart = JSON.parse(sessionStorage.getItem('shoppingCart'));
                     if (shoppingCart == null || shoppingCart == '') {
@@ -116,8 +127,7 @@
                             imgURL: imageURL,
                             quantity: 1
                         });
-                    }
-                    else {
+                    } else {
                         var exist = false;
                         for (i = 0; i < shoppingCart.length; i++) {
                             var cartItem = shoppingCart[i];
@@ -127,8 +137,7 @@
                                     window.location.href = url + '?sku=' + sku + '&errMsg=Item not added to cart, not enough quantity available.';
                                     exist = true;
                                     allOk = false;
-                                }
-                                else {
+                                } else {
                                     shoppingCart[i].quantity += 1;
                                     exist = true;
                                 }
@@ -182,8 +191,6 @@
                 alert('You need to log in first!');
                 return;
             }
-            console.log('memberId:', memberId);  // Log memberId
-            console.log('sku:', sku);  // Log sku
 
             fetch('/api/addToFav/' + sku, {
                 method: 'POST',
@@ -211,8 +218,6 @@
                 alert('You need to log in first!');
                 return;
             }
-            console.log('memberId:', memberId);  // Log memberId
-            console.log('sku:', sku);  // Log sku
 
             fetch('/api/removeFromFav/' + sku, {
                 method: 'DELETE',
@@ -242,7 +247,7 @@
                     <div class="container">
                         <div class="row">
                             <div class="col-md-12">
-                                <h2>Furnitures</h2>
+                                <h2>Furniture Details</h2>
                             </div>
                         </div>
                     </div>
@@ -255,7 +260,7 @@
                                 <div class="thumbnail">
                                     <img alt="" class="img-responsive img-rounded" id="imgFurniture">
                                     <!-- Heart icon -->
-                                    <i class="fas fa-heart heart-icon"></i>
+                                    <i class="fas fa-heart heart-icon" style="display:none;"></i>
                                 </div>
                             </div>
                         </div>

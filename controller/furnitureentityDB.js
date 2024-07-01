@@ -153,5 +153,19 @@ app.delete('/api/removeFromFav/:sku', jsonParser, function (req, res) {
         });
 });
 
+app.get('/api/getFavourites/:memberId', function (req, res) {
+    var memberId = req.params.memberId; // Get memberId from URL parameter
+
+    favourite.getFavourites(memberId)
+        .then((result) => {
+            res.send(result);
+        })
+        .catch((err) => {
+            console.log(err);
+            res.status(500).send("Failed to retrieve favourites");
+        });
+});
+
+
 
 module.exports = app;

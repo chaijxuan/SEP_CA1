@@ -48,7 +48,35 @@ var favouriteDB = {
                 }
             });
         });
-    }
+    },
+    getFavourites: function (memberId) {
+        return new Promise((resolve, reject) => {
+            var conn = db.getConnection();
+            conn.connect(function (err) {
+                if (err) {
+                    console.log(err);
+                    conn.end();
+                    return reject(err);
+                } else {
+                    var sql = 'SELECT f.sku, i.NAME AS name, i.DESCRIPTION AS description, i._LENGTH AS length, i.HEIGHT AS height, i.WIDTH AS width, i.CATEGORY AS category, i.TYPE AS type, i.VOLUME AS volume, ' +
+                              'i.DTYPE AS itemType ' +
+                              'FROM favourite f ' +
+                              'JOIN itementity i ON f.sku = i.SKU ' +
+                              'WHERE f.memberId = ?';
+                    conn.query(sql, [memberId], function (err, result) {
+                        if (err) {
+                            conn.end();
+                            return reject(err);
+                        } else {
+                            conn.end();
+                            return resolve(result);
+                        }
+                    });
+                }
+            });
+        });
+    },
+    
 };
 
 module.exports = favouriteDB;

@@ -20,6 +20,7 @@ document.write('\
         document.getElementById("sofaChairLink").href = "/B/' + countryPrefix + '/furnitureCategory.html?cat=" + encodeURIComponent("Sofas & Chair");\
         document.getElementById("cabinetStorageLink").href = "/B/' + countryPrefix + '/furnitureCategory.html?cat=" + encodeURIComponent("Cabinets & Storage");\
         document.getElementById("retailProductLink").href = "/B/' + countryPrefix + '/retailProductsCategory.html?cat=" + encodeURIComponent("All Retail Products");\
+        document.getElementById("favouritesLink").href = "/B/' + countryPrefix + '/favourites.html";\
     });\
     function logout() {\
         sessionStorage.clear();\
@@ -121,6 +122,9 @@ document.write('\
                     </li>\
                     <li>\
                         <a id="retailProductLink"><i class="icon icon-coffee"></i> Retail Products</a>\
+                    </li>\
+                    <li>\
+                        <a id="favouritesLink"><i class="icon icon-heart"></i> Favourites</a>\
                     </li>\
                 </ul>\
             </nav>\
