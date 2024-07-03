@@ -1,7 +1,7 @@
 var db = require('./databaseConfig.js');
 var RegionalofficeDB = {
     getOfficeNameById: function (id) {
-        return new Promise( ( resolve, reject) => {
+        return new Promise( ( resolve, reject ) => {
             var conn = db.getConnection();
             conn.connect(function (err) {
                 if (err) {
