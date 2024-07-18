@@ -6,7 +6,7 @@ var favouriteDB = {
             var conn = db.getConnection(); 
             conn.connect(function (err) {
                 if (err) {
-                    console.log(err);
+                    console.log(err); 
                     conn.end();
                     return reject(err);
                 } else {
