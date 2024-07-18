@@ -3,7 +3,7 @@ var db = require('./databaseConfig.js');
 var favouriteDB = {
     addFavourite: function (data) {
         return new Promise((resolve, reject) => {
-            var conn = db.getConnection();
+            var conn = db.getConnection(); 
             conn.connect(function (err) {
                 if (err) {
                     console.log(err);
